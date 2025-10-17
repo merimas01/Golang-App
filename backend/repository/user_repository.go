@@ -1,6 +1,6 @@
 package repository
 
-//direktno komunicira sa bazom
+//direct communication with the database
 
 import (
 	"Golang-App/models"
