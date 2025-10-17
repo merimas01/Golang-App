@@ -1,148 +1,92 @@
 package controllers
 
 import (
+	"Golang-App/interfaces"
 	"Golang-App/models"
-	"Golang-App/services"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	Service *services.UserService
+	BaseController[models.User, models.UserInsert, models.UserUpdate]
 }
 
-// @Summary      Create new user
-// @Description  Adds a new user to MySQL
+// NewUserController constructor
+func NewUserController(service interfaces.IUserService) *UserController {
+	return &UserController{
+		BaseController: BaseController[models.User, models.UserInsert, models.UserUpdate]{
+			Service: service,
+		},
+	}
+}
+
+// CreateUser godoc
+// @Summary      Create a new user
+// @Description  Adds a new user to the database
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        user body models.UserInsert true "User"
+// @Param        user body models.UserInsert true "User data"
 // @Success      201 {object} models.User
+// @Failure      400 {object} map[string]string
+// @Failure      500 {object} map[string]string
 // @Router       /users [post]
 func (ctrl *UserController) CreateUser(c *gin.Context) {
-	var input models.UserInsert
-
-	// Bind JSON input
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Call service to create user and get the full User model
-	user, err := ctrl.Service.CreateUser(&input)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Return the saved user (with ID)
-	c.JSON(http.StatusCreated, user)
+	ctrl.BaseController.Create(c)
 }
 
-// UpdateUser godoc
-// @Summary      Update existing user
-// @Description  Updates a user by ID in MySQL
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id   path      int                true  "User ID"
-// @Param        user body      models.UserUpdate  true  "User Update Data"
-// @Success      200  {object}  models.User
-// @Failure      400  {object}  map[string]string
-// @Failure      404  {object}  map[string]string
-// @Router       /users/{id} [put]
-func (ctrl *UserController) UpdateUser(c *gin.Context) {
-	// Get ID from path
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	// Bind JSON input
-	var input models.UserUpdate
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Call service to update user
-	user, err := ctrl.Service.UpdateUser(&input, uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
-
-	// Return the updated user
-	c.JSON(http.StatusOK, user)
-}
-
+// GetAllUsers godoc
 // @Summary      Get all users
+// @Description  Returns a list of users
 // @Tags         users
 // @Produce      json
 // @Success      200 {array} models.User
+// @Failure      500 {object} map[string]string
 // @Router       /users [get]
 func (ctrl *UserController) GetAllUsers(c *gin.Context) {
-	users, err := ctrl.Service.GetAllUsers()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, users)
+	ctrl.BaseController.GetAll(c)
 }
 
 // GetUserByID godoc
 // @Summary      Get user by ID
-// @Description  Retrieve a single user by their ID
+// @Description  Returns a user by its ID
 // @Tags         users
 // @Produce      json
-// @Param        id   path      int  true  "User ID"
-// @Success      200  {object}  models.User
-// @Failure      400  {object}  map[string]string
-// @Failure      404  {object}  map[string]string
+// @Param        id path int true "User ID"
+// @Success      200 {object} models.User
+// @Failure      400 {object} map[string]string
+// @Failure      404 {object} map[string]string
 // @Router       /users/{id} [get]
 func (ctrl *UserController) GetUserByID(c *gin.Context) {
-	idParam := c.Param("id")         // Get the "id" from the URL
-	id, err := strconv.Atoi(idParam) // Convert string to int
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	user, err := ctrl.Service.GetUserByID(uint(id))
-	if err != nil {
-		c.JSON(404, gin.H{"error": "User not found"})
-		return
-	}
-
-	c.JSON(200, user)
+	ctrl.BaseController.GetByID(c)
 }
 
-// GetUserByID godoc
-// @Summary      Delete user by ID
+// UpdateUser godoc
+// @Summary      Update a user
+// @Description  Updates a user by ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "User ID"
+// @Param        user body models.UserUpdate true "Updated user data"
+// @Success      200 {object} models.User
+// @Failure      400 {object} map[string]string
+// @Failure      404 {object} map[string]string
+// @Router       /users/{id} [put]
+func (ctrl *UserController) UpdateUser(c *gin.Context) {
+	ctrl.BaseController.Update(c)
+}
+
+// DeleteUser godoc
+// @Summary      Delete a user
+// @Description  Deletes a user by ID
 // @Tags         users
 // @Produce      json
-// @Param        id   path      int  true  "User ID"
-// @Success      200  {object}  models.User
-// @Failure      400  {object}  map[string]string
-// @Failure      404  {object}  map[string]string
+// @Param        id path int true "User ID"
+// @Success      200 {object} map[string]string
+// @Failure      400 {object} map[string]string
+// @Failure      404 {object} map[string]string
 // @Router       /users/{id} [delete]
 func (ctrl *UserController) DeleteUser(c *gin.Context) {
-	idParam := c.Param("id")         // Get the "id" from the URL
-	id, err := strconv.Atoi(idParam) // Convert string to int
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	if err := ctrl.Service.DeleteUser(uint(id)); err != nil {
-		c.JSON(404, gin.H{"error": "User not found"})
-		return
-	}
-
-	// Return success message
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+	ctrl.BaseController.Delete(c)
 }

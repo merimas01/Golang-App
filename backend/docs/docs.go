@@ -17,6 +17,7 @@ const docTemplate = `{
     "paths": {
         "/users": {
             "get": {
+                "description": "Returns a list of users",
                 "produces": [
                     "application/json"
                 ],
@@ -33,11 +34,20 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.User"
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             },
             "post": {
-                "description": "Adds a new user to MySQL",
+                "description": "Adds a new user to the database",
                 "consumes": [
                     "application/json"
                 ],
@@ -47,10 +57,10 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Create new user",
+                "summary": "Create a new user",
                 "parameters": [
                     {
-                        "description": "User",
+                        "description": "User data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -65,13 +75,31 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
         },
         "/users/{id}": {
             "get": {
-                "description": "Retrieve a single user by their ID",
+                "description": "Returns a user by its ID",
                 "produces": [
                     "application/json"
                 ],
@@ -116,7 +144,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Updates a user by ID in MySQL",
+                "description": "Updates a user by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -126,7 +154,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Update existing user",
+                "summary": "Update a user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -136,7 +164,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "User Update Data",
+                        "description": "Updated user data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -173,13 +201,14 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "description": "Deletes a user by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "Delete user by ID",
+                "summary": "Delete a user",
                 "parameters": [
                     {
                         "type": "integer",
@@ -193,7 +222,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "400": {
@@ -269,12 +301,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "User Service API",
-	Description:      "User microservice in Go",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

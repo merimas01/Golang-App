@@ -6,10 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterUserRoutes(router *gin.Engine, useCtrl *controllers.UserController) {
-	router.POST("/users", useCtrl.CreateUser)
-	router.PUT("/users/:id", useCtrl.UpdateUser)
-	router.GET("/users", useCtrl.GetAllUsers)
-	router.GET("/users/:id", useCtrl.GetUserByID)
-	router.DELETE("/users/:id", useCtrl.DeleteUser)
+func RegisterUserRoutes(router *gin.Engine, userCtrl *controllers.UserController) {
+	// Generic CRUD routes from BaseController
+	router.POST("/users", userCtrl.Create)
+	router.PUT("/users/:id", userCtrl.Update)
+	router.GET("/users", userCtrl.GetAll)
+	router.GET("/users/:id", userCtrl.GetByID)
+	router.DELETE("/users/:id", userCtrl.Delete)
+
+	// User-specific routes
+
 }
