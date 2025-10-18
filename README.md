@@ -19,18 +19,15 @@ DB_PASS=yourpassword
 DB_NAME=yourdbname  
 SEED_DATA=true  
 
-3. Install dependencies  
-`go mod tidy`  
-
-4. Run MySQL   
+3. Run MySQL   
 Make sure your database specified in .env exists:  
 `CREATE DATABASE yourdbname;`  
 
-5. Run the application  
+4. Run the application  
 `go run main.go`  
 
 ## Notes
 > Swagger is available at http://localhost:8080/swagger/index.html
 
-> `SEED_DATA=true` in .env will automatically seed sample User records, so make sure you switch it to *false* if you don't want to seed data everytime you run the application
+> `SEED_DATA=true` in .env will automatically seed sample User records, so make sure you switch it to *false* if you don't want to execute the seeding script everytime you run the application
 
