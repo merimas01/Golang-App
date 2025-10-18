@@ -13,7 +13,6 @@ type UserService struct {
 // UserService implements IUserService
 var _ interfaces.IUserService = &UserService{}
 
-// Constructor
 func NewUserService(repo *BaseService[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]) *UserService {
 	return &UserService{Repo: repo}
 }

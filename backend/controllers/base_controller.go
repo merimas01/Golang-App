@@ -57,13 +57,11 @@ func (ctrl *BaseController[T, Tinsert, Tupdate, Tsearch]) Update(c *gin.Context)
 func (ctrl *BaseController[T, Tinsert, Tupdate, Tsearch]) GetAll(c *gin.Context) {
 	var search Tsearch
 
-	// Bind query parameters to Tsearch struct (page, pageSize, filters)
 	if err := c.ShouldBindQuery(&search); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query parameters"})
 		return
 	}
 
-	// Pass by value, not pointer
 	result, err := ctrl.Service.GetAll(&search)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
