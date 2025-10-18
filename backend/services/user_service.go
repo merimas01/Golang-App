@@ -18,7 +18,6 @@ func NewUserService(repo *BaseService[models.User, models.UserInsert, models.Use
 	return &UserService{Repo: repo}
 }
 
-// Implement CRUD methods by delegating to BaseRepository
 func (s *UserService) Create(input *models.UserInsert) (*models.User, error) {
 	return s.Repo.Create(input)
 }

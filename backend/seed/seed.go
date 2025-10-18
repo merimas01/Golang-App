@@ -3,12 +3,11 @@ package seed
 import (
 	"log"
 
-	"Golang-App/models" // adjust to your actual module path
+	"Golang-App/models"
 
 	"gorm.io/gorm"
 )
 
-// SeedUsers inserts sample users into the database
 func SeedUsers(db *gorm.DB) {
 	users := []models.User{
 		{Name: "Alice Smith", Email: "alice@example.com", Age: 25},
