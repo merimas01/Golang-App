@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/users": {
             "get": {
-                "description": "Returns a list of users",
+                "description": "Returns a paginated list of users",
                 "produces": [
                     "application/json"
                 ],
@@ -25,14 +25,25 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Get all users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (page size)",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User"
-                            }
+                            "$ref": "#/definitions/models.PagedResult-models_User"
                         }
                     },
                     "500": {
@@ -251,6 +262,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.PagedResult-models_User": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {

@@ -1,24 +1,25 @@
 package services
 
 import (
+	"Golang-App/models"
+	"reflect"
+
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
-type BaseService[T any, Tinsert any, Tupdate any] struct {
+type BaseService[T any, Tinsert any, Tupdate any, Tsearch any] struct {
 	DB *gorm.DB
 }
 
 // Create
-func (r *BaseService[T, Tinsert, Tupdate]) Create(input *Tinsert) (*T, error) {
+func (r *BaseService[T, Tinsert, Tupdate, Tsearch]) Create(input *Tinsert) (*T, error) {
 	var entity T
 
-	// Copy matching fields from Tinsert to T
 	if err := copier.Copy(&entity, input); err != nil {
 		return nil, err
 	}
 
-	// Save entity to DB
 	if err := r.DB.Create(&entity).Error; err != nil {
 		return nil, err
 	}
@@ -27,15 +28,13 @@ func (r *BaseService[T, Tinsert, Tupdate]) Create(input *Tinsert) (*T, error) {
 }
 
 // Update
-func (r *BaseService[T, Tinsert, Tupdate]) Update(input *Tupdate, id uint) (*T, error) {
+func (r *BaseService[T, Tinsert, Tupdate, Tsearch]) Update(input *Tupdate, id uint) (*T, error) {
 	var entity T
 
-	// Find the record first
 	if err := r.DB.First(&entity, id).Error; err != nil {
 		return nil, err
 	}
 
-	// Update only non-zero fields from input
 	if err := r.DB.Model(&entity).Updates(input).Error; err != nil {
 		return nil, err
 	}
@@ -44,7 +43,7 @@ func (r *BaseService[T, Tinsert, Tupdate]) Update(input *Tupdate, id uint) (*T, 
 }
 
 // GetByID
-func (r *BaseService[T, Tinsert, Tupdate]) GetByID(id uint) (*T, error) {
+func (r *BaseService[T, Tinsert, Tupdate, Tsearch]) GetByID(id uint) (*T, error) {
 	var entity T
 	if err := r.DB.First(&entity, id).Error; err != nil {
 		return nil, err
@@ -53,24 +52,56 @@ func (r *BaseService[T, Tinsert, Tupdate]) GetByID(id uint) (*T, error) {
 }
 
 // GetAll
-func (r *BaseService[T, Tinsert, Tupdate]) GetAll() ([]T, error) {
+func (r *BaseService[T, Tinsert, Tupdate, Tsearch]) GetAll(search *Tsearch) (models.PagedResult[T], error) {
 	var entities []T
-	if err := r.DB.Find(&entities).Error; err != nil {
-		return nil, err
+	var count int64
+
+	query := r.DB.Model(new(T))
+
+	if err := query.Count(&count).Error; err != nil {
+		return models.PagedResult[T]{}, err
 	}
-	return entities, nil
+
+	var page, pageSize int
+	if v := reflect.ValueOf(search); v.IsValid() && !v.IsZero() {
+		if v.Kind() == reflect.Ptr {
+			v = v.Elem()
+		}
+
+		pageField := v.FieldByName("Page")
+		pageSizeField := v.FieldByName("PageSize")
+
+		if pageField.IsValid() && !pageField.IsNil() {
+			page = int(pageField.Elem().Int())
+		}
+		if pageSizeField.IsValid() && !pageSizeField.IsNil() {
+			pageSize = int(pageSizeField.Elem().Int())
+		}
+	}
+
+	if pageSize > 0 {
+		query = query.Limit(pageSize).Offset(page * pageSize)
+	}
+
+	if err := query.Find(&entities).Error; err != nil {
+		return models.PagedResult[T]{}, err
+	}
+
+	return models.PagedResult[T]{
+		Result: entities,
+		Count:  int(count),
+	}, nil
+
 }
 
 // Delete
-func (r *BaseService[T, Tinsert, Tupdate]) Delete(id uint) error {
+func (r *BaseService[T, Tinsert, Tupdate, Tsearch]) Delete(id uint) error {
 	var entity T
 
-	// Check if the record exists
 	if err := r.DB.First(&entity, id).Error; err != nil {
 		return err // not found
 	}
 
-	// Delete the record
 	if err := r.DB.Delete(&entity).Error; err != nil {
 		return err
 	}

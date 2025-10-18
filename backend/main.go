@@ -4,32 +4,38 @@ import (
 	"Golang-App/config"
 	"Golang-App/controllers"
 	"Golang-App/models"
+	searchobjects "Golang-App/models/search_objects"
 	"Golang-App/routes"
+	"Golang-App/seed"
 	"Golang-App/services"
 	"log"
+	"os"
 
 	_ "Golang-App/docs"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
-	db := config.Connect()
+	config.LoadConfig()
 
-	err := db.Migrator().HasTable(&models.User{})
-	if !err {
-		db.AutoMigrate(&models.User{})
+	dsn := config.GetDSN()
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to DB:", err)
 	}
 
-	// Generic repository
-	userRepo := &services.BaseService[models.User, models.UserInsert, models.UserUpdate]{DB: db}
+	// Seed
+	if os.Getenv("SEED_DATA") == "true" {
+		seed.SeedUsers(db)
+	}
 
-	// UserService
+	userRepo := &services.BaseService[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]{DB: db}
 	userService := services.NewUserService(userRepo)
-
-	// UserController using the new constructor
 	userCtrl := controllers.NewUserController(userService)
 
 	router := gin.Default()

@@ -3,18 +3,19 @@ package controllers
 import (
 	"Golang-App/interfaces"
 	"Golang-App/models"
+	searchobjects "Golang-App/models/search_objects"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	BaseController[models.User, models.UserInsert, models.UserUpdate]
+	BaseController[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]
 }
 
 // NewUserController constructor
 func NewUserController(service interfaces.IUserService) *UserController {
 	return &UserController{
-		BaseController: BaseController[models.User, models.UserInsert, models.UserUpdate]{
+		BaseController: BaseController[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]{
 			Service: service,
 		},
 	}
@@ -37,10 +38,12 @@ func (ctrl *UserController) CreateUser(c *gin.Context) {
 
 // GetAllUsers godoc
 // @Summary      Get all users
-// @Description  Returns a list of users
+// @Description  Returns a paginated list of users
 // @Tags         users
 // @Produce      json
-// @Success      200 {array} models.User
+// @Param        page     query    int    false  "Page number"
+// @Param        page_size query    int    false  "Number of items per page (page size)"
+// @Success      200 {object} models.PagedResult[models.User]
 // @Failure      500 {object} map[string]string
 // @Router       /users [get]
 func (ctrl *UserController) GetAllUsers(c *gin.Context) {

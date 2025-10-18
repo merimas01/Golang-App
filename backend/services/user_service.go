@@ -3,17 +3,18 @@ package services
 import (
 	"Golang-App/interfaces"
 	"Golang-App/models"
+	searchobjects "Golang-App/models/search_objects"
 )
 
 type UserService struct {
-	Repo *BaseService[models.User, models.UserInsert, models.UserUpdate]
+	Repo *BaseService[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]
 }
 
 // UserService implements IUserService
 var _ interfaces.IUserService = &UserService{}
 
 // Constructor
-func NewUserService(repo *BaseService[models.User, models.UserInsert, models.UserUpdate]) *UserService {
+func NewUserService(repo *BaseService[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]) *UserService {
 	return &UserService{Repo: repo}
 }
 
@@ -30,8 +31,8 @@ func (s *UserService) Update(input *models.UserUpdate, id uint) (*models.User, e
 	return s.Repo.Update(input, id)
 }
 
-func (s *UserService) GetAll() ([]models.User, error) {
-	return s.Repo.GetAll()
+func (s *UserService) GetAll(search *searchobjects.BaseSearchObject) (models.PagedResult[models.User], error) {
+	return s.Repo.GetAll(search)
 }
 
 func (s *UserService) Delete(id uint) error {

@@ -1,4 +1,13 @@
 definitions:
+  models.PagedResult-models_User:
+    properties:
+      count:
+        type: integer
+      result:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    type: object
   models.User:
     properties:
       age:
@@ -33,16 +42,23 @@ info:
 paths:
   /users:
     get:
-      description: Returns a list of users
+      description: Returns a paginated list of users
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page (page size)
+        in: query
+        name: page_size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.User'
-            type: array
+            $ref: '#/definitions/models.PagedResult-models_User'
         "500":
           description: Internal Server Error
           schema:
