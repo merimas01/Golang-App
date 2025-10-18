@@ -9,11 +9,11 @@ import (
 	"Golang-App/seed"
 	"Golang-App/services"
 	"log"
-	"os"
 
 	_ "Golang-App/docs"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/driver/mysql"
@@ -29,8 +29,12 @@ func main() {
 		log.Fatal("Failed to connect to DB:", err)
 	}
 
-	// Seed
-	if os.Getenv("SEED_DATA") == "true" {
+	// ovde se dodaju sve tabele koje zelimo migrirati u bazu
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		log.Fatal("Failed to auto-migrate:", err)
+	}
+
+	if viper.GetString("SEED_DATA") == "true" {
 		seed.SeedUsers(db)
 	}
 
