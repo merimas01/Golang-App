@@ -284,9 +284,15 @@
         },
         "models.UserInsert": {
             "type": "object",
+            "required": [
+                "age",
+                "email",
+                "name"
+            ],
             "properties": {
                 "age": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "email": {
                     "type": "string"
@@ -298,9 +304,15 @@
         },
         "models.UserUpdate": {
             "type": "object",
+            "required": [
+                "age",
+                "email",
+                "name"
+            ],
             "properties": {
                 "age": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "email": {
                     "type": "string"

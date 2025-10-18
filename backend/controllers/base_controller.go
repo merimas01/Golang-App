@@ -15,6 +15,7 @@ type BaseController[T any, Tinsert any, Tupdate any, Tsearch any] struct {
 
 func (ctrl *BaseController[T, Tinsert, Tupdate, Tsearch]) Create(c *gin.Context) {
 	var input Tinsert
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -22,11 +23,11 @@ func (ctrl *BaseController[T, Tinsert, Tupdate, Tsearch]) Create(c *gin.Context)
 
 	entity, err := ctrl.Service.Create(&input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, entity)
+	c.JSON(http.StatusOK, entity)
 }
 
 func (ctrl *BaseController[T, Tinsert, Tupdate, Tsearch]) Update(c *gin.Context) {
@@ -45,7 +46,8 @@ func (ctrl *BaseController[T, Tinsert, Tupdate, Tsearch]) Update(c *gin.Context)
 
 	entity, err := ctrl.Service.Update(&input, uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
+		//c.JSON(http.StatusNotFound, gin.H{"error": "Update unsuccessful"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

@@ -22,20 +22,30 @@ definitions:
   models.UserInsert:
     properties:
       age:
+        minimum: 0
         type: integer
       email:
         type: string
       name:
         type: string
+    required:
+    - age
+    - email
+    - name
     type: object
   models.UserUpdate:
     properties:
       age:
+        minimum: 0
         type: integer
       email:
         type: string
       name:
         type: string
+    required:
+    - age
+    - email
+    - name
     type: object
 info:
   contact: {}

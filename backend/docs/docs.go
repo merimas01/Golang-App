@@ -295,9 +295,15 @@ const docTemplate = `{
         },
         "models.UserInsert": {
             "type": "object",
+            "required": [
+                "age",
+                "email",
+                "name"
+            ],
             "properties": {
                 "age": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "email": {
                     "type": "string"
@@ -309,9 +315,15 @@ const docTemplate = `{
         },
         "models.UserUpdate": {
             "type": "object",
+            "required": [
+                "age",
+                "email",
+                "name"
+            ],
             "properties": {
                 "age": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "email": {
                     "type": "string"
