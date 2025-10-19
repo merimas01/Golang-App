@@ -11,7 +11,7 @@ MySQL Server
 `git clone https://github.com/merimas01/Golang-App.git`  
 `cd Golang-App/backend`  
 
-2. Create .env file in the project root (*named: backend*)
+2. Create .env file in the project root (*named: backend*)  
 DB_HOST=localhost  
 DB_PORT=3306  
 DB_USER=root  
