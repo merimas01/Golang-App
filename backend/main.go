@@ -8,6 +8,7 @@ import (
 	"Golang-App/routes"
 	"Golang-App/seed"
 	"Golang-App/services"
+	"fmt"
 	"log"
 
 	_ "Golang-App/docs"
@@ -23,11 +24,27 @@ import (
 func main() {
 	config.LoadConfig()
 
+	dsnNoDB := config.GetDSNWithoutDB()
+
+	tempDB, err := gorm.Open(mysql.Open(dsnNoDB), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to MySQL server:", err)
+	}
+
+	dbName := config.GetDbName()
+	createDBQuery := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName)
+	if err := tempDB.Exec(createDBQuery).Error; err != nil {
+		log.Fatal("Failed to create database:", err)
+	}
+
 	dsn := config.GetDSN()
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to DB:", err)
 	}
+
+	fmt.Println("Connected to database:", dbName)
 
 	// ovde se dodaju sve tabele koje zelimo migrirati u bazu
 	if err := db.AutoMigrate(&models.User{}); err != nil {

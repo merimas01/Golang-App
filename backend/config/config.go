@@ -23,3 +23,15 @@ func GetDSN() string {
 		viper.GetString("DB_PORT") + ")/" +
 		viper.GetString("DB_NAME") + "?charset=utf8mb4&parseTime=True"
 }
+
+func GetDSNWithoutDB() string {
+	return viper.GetString("DB_USER") + ":" +
+		viper.GetString("DB_PASS") + "@tcp(" +
+		viper.GetString("DB_HOST") + ":" +
+		viper.GetString("DB_PORT") + ")/" +
+		"?charset=utf8mb4&parseTime=True&loc=Local"
+}
+
+func GetDbName() string {
+	return viper.GetString("DB_NAME")
+}

@@ -15,19 +15,17 @@ MySQL Server
 DB_HOST=localhost  
 DB_PORT=3306  
 DB_USER=root  
-DB_PASS=yourpassword  
-DB_NAME=yourdbname  
+DB_PASS=yourMySQLpassword  
+DB_NAME=yourMySQLdbname  
 SEED_DATA=true  
 
-3. Run MySQL   
-Make sure your database specified in .env exists:  
-`CREATE DATABASE yourdbname;`  
-
-4. Run the application  
+3. Run the application  
 `go run main.go`  
 
 ## Notes
 > Swagger is available at http://localhost:8080/swagger/index.html
 
-> `SEED_DATA=true` in .env will automatically seed sample User records, so make sure you switch it to *false* if you don't want to execute the seeding script everytime you run the application
+> If `SEED_DATA` in .env is set to ***true***, everytime you run the application, the seeding script will be executed 
+
+> Everytime you run the seeding script you won't produce duplicate records
 
