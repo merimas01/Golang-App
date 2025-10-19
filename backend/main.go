@@ -47,6 +47,7 @@ func main() {
 	fmt.Println("Connected to database:", dbName)
 
 	// ovde se dodaju sve tabele koje zelimo migrirati u bazu
+	// migriraju se sve tabele koje ne postoje u bazi (i kolone)
 	if err := db.AutoMigrate(&models.User{}); err != nil {
 		log.Fatal("Failed to auto-migrate:", err)
 	}
@@ -55,6 +56,7 @@ func main() {
 		seed.SeedUsers(db)
 	}
 
+	//ovde se prosljedjuje DB objekt
 	userRepo := &services.BaseService[models.User, models.UserInsert, models.UserUpdate, searchobjects.BaseSearchObject]{DB: db}
 	userService := services.NewUserService(userRepo)
 	userCtrl := controllers.NewUserController(userService)

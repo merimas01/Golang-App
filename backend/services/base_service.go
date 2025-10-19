@@ -56,26 +56,27 @@ func (r *BaseService[T, Tinsert, Tupdate, Tsearch]) GetAll(search *Tsearch) (mod
 	var entities []T
 	var count int64
 
-	query := r.DB.Model(new(T))
+	query := r.DB.Model(new(T)) //Model govori sa kojom DB tabelom cemo raditi
 
 	if err := query.Count(&count).Error; err != nil {
 		return models.PagedResult[T]{}, err
 	}
 
-	var page, pageSize int
+	var page int
+	pageSize := 10
 	if v := reflect.ValueOf(search); v.IsValid() && !v.IsZero() {
 		if v.Kind() == reflect.Ptr {
-			v = v.Elem()
+			v = v.Elem() //dereferencira search obj
 		}
 
 		pageField := v.FieldByName("Page")
 		pageSizeField := v.FieldByName("PageSize")
 
-		if pageField.IsValid() && !pageField.IsNil() {
-			page = int(pageField.Elem().Int())
+		if pageField.IsValid() && !pageField.IsZero() {
+			page = int(pageField.Int())
 		}
-		if pageSizeField.IsValid() && !pageSizeField.IsNil() {
-			pageSize = int(pageSizeField.Elem().Int())
+		if pageSizeField.IsValid() && !pageSizeField.IsZero() {
+			pageSize = int(pageSizeField.Int())
 		}
 	}
 
