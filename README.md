@@ -11,7 +11,7 @@ MySQL Server
 `git clone https://github.com/merimas01/Golang-App.git`  
 `cd Golang-App/backend`  
 
-2. Create .env file in the project root  
+2. Create .env file in the project root (*named: backend*)
 DB_HOST=localhost  
 DB_PORT=3306  
 DB_USER=root  
@@ -27,5 +27,5 @@ SEED_DATA=true
 
 > If `SEED_DATA` in .env is set to ***true***, everytime you run the application, the seeding script will be executed 
 
-> Everytime you run the seeding script you won't produce duplicate records
+> Everytime the seeding script is executed it won't produce duplicate records
 
